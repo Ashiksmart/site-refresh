@@ -1,22 +1,38 @@
 <template>
   <div class="app-container">
-    <div class="content-container"
-      :style="!base.isStop ? { maxWidth: '500px', padding: '20px' } : { maxWidth: '100%' }">
+    <div class="content-container">
+      <!-- <div class="card" :class="{ 'card-expanded': base.isStop }"> -->
       <el-form v-if="!base.isStop" :model="base" :rules="rules" ref="formRef" label-width="0">
-        <el-form-item prop="textInput">
-          <el-input v-model="base.textInput" :placeholder="'Enter a valid URL'"
-            :class="{ invalid: !base.isValidUrl && base.textInput !== '' }" @input="validateUrl" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="runAction">
-            RUN
-          </el-button>
-        </el-form-item>
+        <el-col>
+          <el-row>
+            <el-form-item prop="textInput">
+              <el-input v-model="base.textInput" placeholder="Enter a valid URL"
+                :class="{ invalid: !base.isValidUrl && base.textInput !== '' }" @input="validateUrl" />
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item>
+              <el-input-number v-model="base.number" :min="1" :max="60" controls-position="right"
+                @change="handleChange" />
+            </el-form-item>
+            <el-form-item>
+              <el-row class="switch">
+              SECONDS
+              <el-switch v-model="base.timeValue" />
+              MINUTES
+            </el-row>
+            </el-form-item>
+            <el-form-item>
+            <el-button type="primary" @click="runAction">START TO REFRESH</el-button>
+          </el-form-item>
+          </el-row>
+        </el-col>
       </el-form>
       <el-button v-if="base.isStop" class="floating-button" type="danger" @click="stopAction">
         STOP
       </el-button>
       <iframe v-if="base.isStop" :src="base.textInput" ref="iframeRef" class="responsive-iframe"></iframe>
+      <!-- </div> -->
     </div>
   </div>
 </template>
@@ -30,6 +46,8 @@ const formRef = ref(null)
 
 const base = reactive({
   textInput: '',
+  number: 0,
+  timeValue: false,
   refreshUrl: 'refreshUrl',
   isValidUrl: false,
   isStop: false
@@ -53,10 +71,7 @@ const validateUrl = () => {
 
 const runAction = () => {
   formRef.value.validate((valid) => {
-    console.log("valid: ", valid);
-
     if (valid) {
-      console.log('Running action with input:', base.textInput)
       localStorage.setItem(base.refreshUrl, base.textInput)
 
       const iframe = iframeRef.value
@@ -65,9 +80,8 @@ const runAction = () => {
       }
 
       setTimeout(() => {
-        console.log('SETTIMEOUT')
-        location.reload();
-      }, 5000)
+        location.reload()
+      }, convertToMilliseconds(base.number,base.timeValue))
 
       base.isStop = true
     } else {
@@ -78,10 +92,19 @@ const runAction = () => {
 }
 
 const stopAction = () => {
-  console.log('Stop action triggered')
   localStorage.removeItem(base.refreshUrl)
   base.textInput = ''
   base.isStop = false
+}
+
+const handleChange = (value) => {
+  console.log(value)
+}
+
+const convertToMilliseconds = (value, timeValue) => {
+  console.log("value :",value);
+  
+  return (!timeValue) ? value * 1000 : value * 60 * 1000;
 }
 
 onMounted(() => {
@@ -100,44 +123,42 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(135deg, #6b73ff 0%, #000dff 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Roboto', sans-serif;
 }
 
 .content-container {
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
+  padding: 20px;
 }
 
 .el-input {
-  width: calc(100% - 30px);
+  width: 600px;
+  height: 50px;
+  border-radius: 5px;
 }
 
 .invalid {
-  border-color: red;
-}
-
-.el-button {
-  margin-top: 10px;
+  border-color: red !important;
 }
 
 .floating-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #dc3545;
+  margin-top: 20px;
+  background-color: #e74c3c;
   border: none;
   color: white;
-  padding: 15px 20px;
+  padding: 10px 20px;
   font-size: 16px;
-  border-radius: 50%;
+  border-radius: 5px;
   cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .floating-button:hover {
-  background-color: #c82333;
+  background-color: #c0392b;
 }
 
 .responsive-iframe {
@@ -145,5 +166,18 @@ onMounted(() => {
   width: 100%;
   height: 100vh;
   border: none;
+}
+
+.el-input-number.is-controls-right {
+  width: 75px;
+}
+
+.switch {
+  width: 225px;
+    justify-content: space-evenly;
+}
+
+button.el-button.el-button--primary{
+  width: 300px
 }
 </style>
