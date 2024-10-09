@@ -10,11 +10,13 @@
           <ul>
             <li>✔️ Real-time updates on business statuses</li>
             <li>✔️ User-friendly interface</li>
+          </ul>
+          <ul>
             <li>✔️ Customizable notifications</li>
             <li>✔️ Comprehensive reporting tools</li>
           </ul>
         </div>
-        <div class="content-container .pd-20">
+        <div class="content-container pd-20">
           <el-form :model="base" :rules="rules" ref="formRef" label-width="0">
             <el-col>
               <el-row>
@@ -23,20 +25,18 @@
                     :class="{ invalid: !base.isValidUrl && base.textInput !== '' }" @input="validateUrl" />
                 </el-form-item>
               </el-row>
-              <el-row>
+              <el-row class="button-section">
                 <el-form-item>
                   <el-input-number v-model="base.number" :min="1" :max="60" controls-position="right"
                     @change="handleChange" />
                 </el-form-item>
                 <el-form-item>
                   <el-row class="switch">
-                    SECONDS
-                    <el-switch v-model="base.timeValue" />
-                    MINUTES
+                    <el-switch v-model="base.timeValue" active-text="MINUTES" inactive-text="SECONDS" />
                   </el-row>
                 </el-form-item>
-                <el-form-item>
-                  <el-button type="primary" @click="runAction">START TO REFRESH</el-button>
+                <el-form-item class="start-refresh-btn">
+                  <el-button type="primary" @click="runAction">START</el-button>
                 </el-form-item>
               </el-row>
             </el-col>
@@ -146,13 +146,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Dark Theme */
 .app-container {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
   font-family: 'Roboto', sans-serif;
+  color: #ecf0f1;
 }
 
 .content-container {
@@ -163,83 +165,115 @@ onMounted(() => {
   height: 100%;
 }
 
-.pd-20 {
-  padding: 20px;
+/* Header Styling */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
+.header h1 {
+  font-size: 2.5rem;
+  color: #ecf0f1;
+}
+
+.header p {
+  font-size: 1.2rem;
+  color: #bdc3c7;
+}
+
+/* Features Section */
+.features {
+  margin: 20px;
+  padding: 20px;
+  background-color: #34495e;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+}
+
+.features ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.features li {
+  font-size: 1.1rem;
+  color: #ecf0f1;
+  margin-bottom: 10px;
+}
+
+/* Form Styling */
 .el-input {
-  width: 600px;
-  height: 50px;
+  width: 500px;
+  height: 45px;
   border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .invalid {
   border-color: red !important;
 }
 
-.floating-button {
-  position: absolute;
-  right: 20px;
-  margin-top: 20px;
-  background-color: #e74c3c;
-  border: none;
+/* Buttons */
+button.el-button.el-button--primary {
+  width: 100%;
+  max-width: 300px;
+  height: 50px;
+  background-color: #2980b9;
+  border-radius: 8px;
   color: white;
-  padding: 10px 20px;
   font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
+}
+
+button.el-button.el-button--primary:hover {
+  background-color: #3498db;
+}
+
+/* Align Start Button */
+.start-refresh-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-refresh-btn button.el-button.el-button--primary {
+  height: 30px;
+}
+
+/* Floating Button */
+.floating-button {
+  position: fixed;
+  right: 20px;
   bottom: 20px;
+  background-color: #e74c3c;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 50px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .floating-button:hover {
   background-color: #c0392b;
 }
 
+/* Iframe */
 .responsive-iframe {
-  flex: 1;
   width: 100%;
   height: inherit;
   border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.el-input-number.is-controls-right {
-  width: 75px;
-}
-
-.switch {
-  width: 225px;
-  justify-content: space-evenly;
-}
-
-button.el-button.el-button--primary {
-  width: 300px
-}
-
-.container-layout {
-  /* background: blanchedalmond; */
-  width: inherit;
+/* General Utility Classes */
+.pd-20 {
   padding: 20px;
 }
 
-.container-inside {
-  display: flex;
-  /* background: aquamarine; */
-  flex-direction: row;
-  justify-content: center;
-  height: 200px;
-  padding: 20px;
-}
-
-.header {
-  margin-bottom: 40px;
-}
-
-.features {
-  margin: 20px 0;
-}
-
-.features ul {
-  list-style-type: none;
+.button-section {
+  justify-content: space-around;
 }
 </style>
