@@ -2,18 +2,18 @@
   <div class="app-container">
     <div v-if="!base.isStop" class="container-layout">
       <div class="header">
-        <h1>Welcome to My App</h1>
-        <p>Your go-to solution for [describe the purpose of your app, e.g., tracking business hours].</p>
+        <h1>Welcome to Site Refresh Pro</h1>
+        <p>Refresh any website at intervals you set, perfect for monitoring live content changes in real-time.</p>
       </div>
       <div class="container-inside">
         <div class="features">
           <ul>
-            <li>✔️ Real-time updates on business statuses</li>
-            <li>✔️ User-friendly interface</li>
+            <li>✔️ Real-time URL refresh capabilities</li>
+            <li>✔️ Intuitive and easy-to-use interface</li>
           </ul>
           <ul>
-            <li>✔️ Customizable notifications</li>
-            <li>✔️ Comprehensive reporting tools</li>
+            <li>✔️ Customizable refresh intervals in seconds or minutes</li>
+            <li>✔️ Enhanced performance for consistent monitoring</li>
           </ul>
         </div>
         <div class="content-container pd-20">
@@ -28,7 +28,7 @@
               <el-row class="button-section">
                 <el-form-item>
                   <el-input-number v-model="base.number" :min="1" :max="60" controls-position="right"
-                    @change="handleChange" />
+                    @focus="handleChange" />
                 </el-form-item>
                 <el-form-item>
                   <el-row class="switch">
@@ -95,9 +95,23 @@ const runAction = () => {
       }
       localStorage.setItem(base.refreshValue, JSON.stringify(refreshValue))
 
-      const iframe = iframeRef.value
-      if (iframe) {
-        iframe.src = refreshValue.url
+      // Create a new iframe element
+      const iframe = document.createElement('iframe')
+      iframe.src = refreshValue.url
+      iframe.className = 'responsive-iframe'
+
+      // Add an event listener to handle errors
+      iframe.addEventListener('error', () => {
+        // Display an error message
+        ElMessage.error('Failed to load site. Please check the URL or try again later.')
+        // Stop the refresh interval
+        stopAction()
+      })
+
+      // Replace the existing iframe element with the new one
+      const iframeRefElement = iframeRef.value
+      if (iframeRefElement) {
+        iframeRefElement.parentNode.replaceChild(iframe, iframeRefElement)
       }
 
       setTimeout(() => {
@@ -105,8 +119,6 @@ const runAction = () => {
       }, convertToMilliseconds(refreshValue.timeCount, refreshValue.timeMode))
 
       base.isStop = true
-    } else {
-      ElMessage.error('Please check the form fields and try again.')
     }
   })
 }
@@ -121,12 +133,10 @@ const stopAction = () => {
 }
 
 const handleChange = (value) => {
-  console.log(value)
+  if (!value) base.number = 1
 }
 
 const convertToMilliseconds = (value, timeValue) => {
-  console.log("value :", value, timeValue);
-
   return (!timeValue) ? value * 1000 : value * 60 * 1000;
 }
 
